@@ -4,7 +4,7 @@
 * Auma Asiyo: laasiyo
 
 ## Usage
-This program demonstrates a simple peer-to-server and peer-to-peer paradigm. Clients connect to the server in order to add, list, and lookup any other clients with a specified RFC. Clients can then connect to other clients to download RFCs from them.
+This program demonstrates a simple peer-to-server and peer-to-peer paradigm. Clients connect to the server in order to add, list, and lookup any other clients with a specified RFC. Clients can then connect to other clients to download RFCs directly from them.
 
 ## Setup
 to run the program, ensure that you have python installed and are running on a Unix-based system. Since the code uses the os.fork() function, it will not work on a windows-based system.
