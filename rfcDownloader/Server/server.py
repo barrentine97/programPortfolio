@@ -13,6 +13,8 @@ from Status.status import Status
 from socket import *
 import signal
 
+# unlinks the linked lists from the block of shared memory,
+# closes the serverSocket, and exits
 def disconnect(signal, frame):
     print("\ndisconnecting...")
     serverSocket.close()
@@ -20,6 +22,8 @@ def disconnect(signal, frame):
     rfcList.cleanup()
     exit(0)
 
+# removes the client and all associated RFC information
+# from the list of peers when a client tries to disconnect
 def disconnectClient(hostname, uploadPort, shmPeerList, shmRfcList):
     print("Disconnecting client: ", clientAddress)
     # remove the client from the list of peers
@@ -29,6 +33,7 @@ def disconnectClient(hostname, uploadPort, shmPeerList, shmRfcList):
     rfcList = RFCList.getSharedList(shmRfcList)
     rfcList.removeAll(hostname, uploadPort)
 
+# processes a new client using a separate process
 def processRequest(connectionSocket, clientAddress):
 
     # add the new peer to the list of peers
@@ -51,22 +56,24 @@ def processRequest(connectionSocket, clientAddress):
             disconnectClient(hostname, uploadPort, shmPeerList, shmRfcList)
             return
         
-        # parse the request
+        # otherwise, parse the request
         lines = data.decode().split("\r\n")
         fieldLine = lines[0].split(" ")
         method = fieldLine[0]
+
         # if the client wants to exit, disconnect the client
         if method == "EXIT":
             disconnectClient(hostname, uploadPort, shmPeerList, shmRfcList)
             return
 
         if method == "ADD":
-            # if adding, add the clients RFC
+            # if adding, parse the request
             rfcNumber = fieldLine[2]
             portLine = lines[2].split(": ")
             port = int(portLine[1])
             titleLine = lines[3].split(": ")
             title = titleLine[1]
+            # add the RFC to the list
             rfcList = RFCList.getSharedList(shmRfcList)
             rfcList.addRfc(rfcNumber, title, hostname, port)
             version = fieldLine[3]
@@ -77,11 +84,12 @@ def processRequest(connectionSocket, clientAddress):
             connectionSocket.send(response.encode())
 
         elif method == "LOOKUP":
-            # if looking up, search through the list of RFCs
+            # if looking up, parse the request
             rfcNumber = fieldLine[2]
             titleLine = lines[3].split(": ")
             title = titleLine[1]
             version = fieldLine[3]
+            # search through the list of RFCs
             rfcList = RFCList.getSharedList(shmRfcList)
             hosts = rfcList.lookup(rfcNumber, title)
             # if there are no RFCs, return NOT_FOUND error
@@ -141,7 +149,7 @@ rfcList = RFCList()
 # catch keyboard interrupt for graceful disconnect
 signal.signal(signal.SIGINT, disconnect)
 
-# infinite loop
+# continue waiting for new connections
 while 1:
     print('Waiting for a connection...')
     connectionSocket, clientAddress = serverSocket.accept()
@@ -155,6 +163,6 @@ while 1:
         connectionSocket.close()
         exit(0)
     else:
-        # this is a parent process
+        # this is the parent process
         connectionSocket.close()
         

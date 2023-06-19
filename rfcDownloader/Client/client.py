@@ -15,7 +15,7 @@ from Status.status import Status
 from socket import *
 import signal
 
-#Create ADD request (adding new RFC)
+# Create ADD request (adding new RFC)
 def addRequest(rfcNumber, rfcTitle, uploadPort):
 	hostname = clientSocket.getsockname()[0]
 	message = "ADD RFC " + str(rfcNumber) + " P2P-CI/1.0\r\n"\
@@ -24,6 +24,7 @@ def addRequest(rfcNumber, rfcTitle, uploadPort):
 			  "Title: " + str(rfcTitle) + "\r\n"
 	return message
 
+# Create LOOKUP request
 def lookupRequest(rfcNumber, rfcTitle, uploadPort):
 	hostname, address = clientSocket.getsockname()
 	message = "LOOKUP RFC " + str(rfcNumber) + " P2P-CI/1.0\r\n"\
@@ -32,7 +33,7 @@ def lookupRequest(rfcNumber, rfcTitle, uploadPort):
 			  "Title: " + str(rfcTitle) + "\r\n"
 	return message
 
-#Create the GET Request message
+# Create GET Request
 def getRequest(rfcNumber):
 	hostname, address = clientSocket.getsockname()
 	message = "GET RFC " + str(rfcNumber) + " P2P-CI/1.0\r\n"\
@@ -40,6 +41,7 @@ def getRequest(rfcNumber):
 			  "OS: " + platform.platform() + "\r\n"
 	return message
 
+# Create GET Reply, used for P2P communication
 def getReply(data, rfcFilePath):
 	message = "P2P-CI/1.0 200 OK\r\n"\
 				"Date: " + str(email.utils.formatdate(usegmt=True)) + "\r\n"\
@@ -49,7 +51,7 @@ def getReply(data, rfcFilePath):
 				"Content-Type: text/plain\r\n"
 	return message
 
-#Create the LIST Request message
+# Create LIST Request
 def listRequest():
 	hostname, address = clientSocket.getsockname()
 	message = "LIST ALL P2P-CI/1.0\r\n"\
@@ -57,6 +59,7 @@ def listRequest():
 			  "Port: " + str(address) + "\r\n"
 	return message
 
+# disconnect the client
 def disconnect(s, frame):
 	os.kill(pid, signal.SIGTERM)
 	clientSocket.close()
@@ -90,10 +93,12 @@ def uploadRequest():
 			reply += data
 			downloadSocket.send(reply.encode())
 		else:
+			# if RFC is not found, send error message instead
 			reply = "P2P-CI/1.0 " + str(Status.NOT_FOUND.value) + " " + str(Status.NOT_FOUND.name)
 			downloadSocket.send(reply.encode())
 
-# Sends GET request and receives what is returned
+# Sends GET request and receives what is returned. Used
+# to download RFC from another client
 def downloadRFC(rfcNumber, hostname, portNumber):
 
 	# Connect to upload server of the peer with requested file
@@ -130,16 +135,17 @@ def downloadRFC(rfcNumber, hostname, portNumber):
 		with open(rfcFilePath, 'w') as file:
 			file.write(content)
 
-	#Closing the socket connection
+	#Close the socket connection
 	requestPeerSocket.close()
 
-# Handle code for GET,ADD,LOOKUP,LIST and EXIT
+# Handle GET, ADD, LIST, LOOKUP, and EXIT requests
 def userInput():
-	# Get the request input from user
+	# get the request input from the user
 	print("Enter: ADD, GET, LIST, LOOKUP or EXIT:")
 	service = input().upper()
 
 	if service == "ADD":
+		# get the request input from the user
 		print("Enter RFC Number")
 		try:
 			rfcNumber = int(input())
@@ -190,7 +196,7 @@ def userInput():
 		return
 
 	elif service == "LIST":
-		# Create a LIST request and send to the server
+		# send list request to the server
 		reqMessage = listRequest()
 		print("LIST Request")
 		print(reqMessage)

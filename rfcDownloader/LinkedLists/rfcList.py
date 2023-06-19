@@ -2,11 +2,14 @@ from multiprocessing import shared_memory
 import pickle
 
 class RFCList:
+    # start of linked list with reference to the head
+    # also uses block of shared memory
     def __init__(self):
         self.head = None
         self.sharedMem = shared_memory.SharedMemory(name="sharedRfcList", create=True, size=1024)
         self.updateSharedMem()
 
+    # returns the rfcList associated with the block of sharedMem
     def getSharedList(sharedMem):
         rfcList = sharedMem.buf
         return pickle.loads(rfcList)
@@ -31,6 +34,8 @@ class RFCList:
                 current = current.next
         self.updateSharedMem()
     
+    # returns a list of hosts that have added the given
+    # rfc number and title
     def lookup(self, number, title):
         hosts = []
         current = self.head
@@ -45,6 +50,7 @@ class RFCList:
             current = current.next
         return hosts
     
+    # returns a list of all rfcs added
     def getAll(self):
         rfcs = []
         current = self.head
@@ -61,13 +67,20 @@ class RFCList:
         
         return rfcs
 
+    # updates the block of shared memory with
+    # this rfcList
     def updateSharedMem(self):
         pickledData = pickle.dumps(self)
         self.sharedMem.buf[:len(pickledData)] = pickledData
     
+    # unlinks this list from the block of shared memory
     def cleanup(self):
         self.sharedMem.unlink()
 
+# a node in the linked rfcList containing the
+# rfc number, rfc title, hostname and port number of
+# the peer that has added this rfc, and a reference to
+# the next node in the list
 class rfc:
     def __init__(self, number, title, hostname, port):
         self.number = number

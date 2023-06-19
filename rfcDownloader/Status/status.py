@@ -1,5 +1,6 @@
 from enum import Enum
 
+# enum for different types of request status
 class Status(Enum):
     OK = 200
     BAD_REQUEST = 400
