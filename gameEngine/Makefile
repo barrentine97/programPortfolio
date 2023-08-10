@@ -19,7 +19,7 @@ client: $(filter-out ./server.o, $(obj))
 	$(UBUNTU_COMPILER) -o $@ $^ $(LDFLAGS) -L$(UBUNTU_LIB)
 
 %.o: %.cpp
-	$(UBUNTU_COMPILER) -c $^ -o $@ -I$(UBUNTU_INTEL_INCLUDEDIR)
+	$(UBUNTU_COMPILER) -std=c++11 -c $^ -o $@ -I$(UBUNTU_INTEL_INCLUDEDIR)
 
 clean:
 	rm -f $(obj) main
