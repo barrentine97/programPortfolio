@@ -1,0 +1,13 @@
+Using Makefile:
+to compile, navigate to the usgsFlightInfo folder and type "make".
+to clean up object files, output files, and executables, type "make clean".
+
+To Run:
+navigate to the usgsFlightInfo folder and type ./flightInfo
+
+To Change The Schedule:
+
+in the schedule folder, open the desired schedule and change it in the text file and save. the format is:
+arrivalCityCode departureCityCode arrivalTime departureTime
+
+Note: you can leave the departure/arrival times blank for a flight and it will ask you for those values during runtime.

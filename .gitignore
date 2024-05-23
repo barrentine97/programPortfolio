@@ -22,3 +22,6 @@ gameEngine/platform/Platform.o
 gameEngine/sideboundary/SideBoundary.o
 gameEngine/spawnpoint/SpawnPoint.o
 gameEngine/time/Timeline.o
+usgsFlightInfo/*.o
+usgsFlightInfo/FlightInfo
+usgsFlightInfo/output.txt
