@@ -22,16 +22,18 @@ Use the following command to execute the client.
 
 ## Functionality
 Movement:
-    Left arrow: move left
-    Right arrow: move right
-    Up arrow: jump
+* Left arrow: move left
+* Right arrow: move right
+* Up arrow: jump
+  
 Resize:
-    R: toggle between resizing in constant and proportional mode
+* R: toggle between resizing in constant and proportional mode
+
 Pause:
-    P: toggle between pause and unpause
-Speed:
-    S: speed up
-    W: slow down
-    (there are 3 speeds: x0.5, x1, x2. Speeding up or slowing down when it is already at min/max will do nothing)
+* P: toggle between pause and unpause
+  
+Speed (there are 3 speeds: x0.5, x1, x2. Speeding up or slowing down when it is already at min/max will do nothing):
+* S: speed up
+* W: slow down
 
 This program also allows for multiplayer. Multiple clients can connect and disconnect to the server at the same time.
