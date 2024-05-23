@@ -1,6 +1,6 @@
 # USGS Flight Info
 
-# Using The Makefile
+## Using The Makefile
 to use the Makefile, navigate to the usgsFlightInfo folder.
 Use the following command to compile:
 ```
@@ -10,13 +10,13 @@ Use the following command to clean up object files, output files, and executable
 ```
 make clean
 ```
-# To Run:
+## To Run:
 Use the following command in the usgsFlightInfo folder after compilation:
 ```
 ./flightInfo
 ```
 
-# To Change The Schedule:
+## To Change The Schedule:
 In the schedule folder, open the desired schedule and change it in the text file and save. the format is:
 arrivalCityCode departureCityCode arrivalTime departureTime
 
