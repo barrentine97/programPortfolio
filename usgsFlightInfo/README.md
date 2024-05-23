@@ -18,6 +18,7 @@ Use the following command in the usgsFlightInfo folder after compilation:
 
 ## To Change The Schedule:
 In the schedule folder, open the desired schedule and change it in the text file and save. the format is:
+
 arrivalCityCode departureCityCode arrivalTime departureTime
 
 Note: you can leave the departure/arrival times blank for a flight and it will ask you for those values during runtime.
