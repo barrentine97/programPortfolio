@@ -1,13 +1,18 @@
-all: flightInfo.o flight.o
-	clang++ flightInfo.o flight.o -o flightInfo
+CXX := clang++
+EXE := FlightInfo
+CXXFLAGS := -std=c++11
 
-flightInfo.o: flightInfo.cpp
-	clang++ -std=c++11 flightInfo.cpp -c -o flightInfo.o
+VPATH := Flight
+BUILDDIR := Flight
 
-flight.o: Flight/Flight.cpp Flight/Flight.h
-	clang++ -std=c++11 Flight/Flight.cpp -c -o flight.o
+OBJS := FlightInfo.o $(BUILDDIR)/Flight.o
+
+$(EXE): $(OBJS)
+	$(CXX) $^ -o $@
+
+$(BUILDDIR)/%.o: $(BUILDDIR)/%.cpp
+	$(CXX) $(CXXFLAGS) $< -c -o $@
 
 clean:
-	rm -f flightInfo
-	rm -f *.o
+	rm -f $(OBJS) $(EXE)
 	rm -f output.txt
