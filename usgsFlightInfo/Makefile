@@ -6,7 +6,6 @@ VPATH := Flight
 BUILDDIR := Flight
 
 OBJS := FlightInfo.o $(BUILDDIR)/Flight.o
-HEADERS := $(BUILDDIR)/*.h
 
 $(EXE): $(OBJS)
 	$(CXX) $^ -o $@
