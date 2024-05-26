@@ -6,34 +6,14 @@ string Flight::addPadding(int w, char fill, int number) {
     return ss.str();
 }
 
-string Flight::getCityCode(int flightNumber) {
-    if (flightNumber == 455 || flightNumber == 456) {
-        return "HVN";
-    } else if (flightNumber == 387 || flightNumber == 388) {
-        return "TPA";
-    } else if (flightNumber == 771 || flightNumber == 772) {
-        return "FLL";
-    } else if (flightNumber == 780 || flightNumber == 781) {
-        return "MCO";
-    } else if (flightNumber == 471 || flightNumber == 472) {
-        return "BWI";
-    } else if (flightNumber == 575 || flightNumber == 576) {
-        return "ILG";
-    } else if (flightNumber == 909 || flightNumber == 910) {
-        return "MSP";
-    } else {
-        return "Invalid";
-    }
-}
-
-Flight::Flight(string airlineCode, int arrivalNumber, int departureNumber) {
+Flight::Flight(string airlineCode, int arrivalNumber, string arrivalCity, int departureNumber, string departureCity) {
     this->airlineCode = airlineCode;
 
     this->arrivalNumber = arrivalNumber;
-    this->arrivalCity = getCityCode(arrivalNumber);
+    this->arrivalCity = arrivalCity;
 
     this->departureNumber = departureNumber;
-    this->departureCity = getCityCode(departureNumber);
+    this->departureCity = departureCity;
 
     this->gate = 4;
 }
@@ -66,12 +46,16 @@ string Flight::getArrivalNumber() {
     return airlineCode + to_string(arrivalNumber);
 }
 
+int Flight::getArrivalTime() {
+    return arrivalTime;
+}
+
 string Flight::getDepartureNumber() {
     return airlineCode + to_string(departureNumber);
 }
 
-bool Flight::isValid() {
-    return (arrivalCity != "Invalid" && departureCity != "Invalid");
+int Flight::getDepartureTime() {
+    return departureTime;
 }
 
 string Flight::printFlight() {

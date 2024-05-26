@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
+#include <iostream>
 
 using namespace std;
 
@@ -20,10 +21,9 @@ class Flight {
     int gate;
     
     string addPadding(int w, char fill, int number);
-    string getCityCode(int flightNumber);
 
 public:
-    Flight(string airlineCode, int arrivalNumber, int departureNumber);
+    Flight(string airlineCode, int arrivalNumber, string arrivalCode, int departureNumber, string departureCode);
     void setArrivalTime(int arrivalTime);
     void setDepartureTime(int departureTime);
     void setOutboundPax(int outboundPax);
@@ -31,7 +31,8 @@ public:
     void setOutboundWchr(int outboundWchr);
     void setGate(int gate);
     string getArrivalNumber();
+    int getArrivalTime();
     string getDepartureNumber();
-    bool isValid();
+    int getDepartureTime();
     string printFlight();
 };
