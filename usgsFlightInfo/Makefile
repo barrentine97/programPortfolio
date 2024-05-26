@@ -15,4 +15,5 @@ $(BUILDDIR)/%.o: $(BUILDDIR)/%.cpp $(HEADERS)
 
 clean:
 	rm -f $(OBJS) $(EXE)
-	rm -f output.txt
+	rm -f /Users/brandonbarrentine/Desktop/usgsFlightInfo
+	rm -f /Users/brandonbarrentine/Desktop/output.txt
