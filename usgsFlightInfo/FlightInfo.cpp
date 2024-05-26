@@ -73,12 +73,12 @@ int main() {
             flight.setDepartureTime(departureTime);
             
 
-            cout << departureInfo << " outbound pax: ";
-            cin >> outboundPax;
-            flight.setOutboundPax(outboundPax);
             cout << arrivalInfo << " inbound wchr: ";
             cin >> inboundWchr;
             flight.setInboundWchr(inboundWchr);
+            cout << departureInfo << " outbound pax: ";
+            cin >> outboundPax;
+            flight.setOutboundPax(outboundPax);
             cout << departureInfo << " outbound wchr: ";
             cin >> outboundWchr;
             flight.setOutboundWchr(outboundWchr);
