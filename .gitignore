@@ -26,3 +26,4 @@ usgsFlightInfo/*.o
 usgsFlightInfo/Flight/*.o
 usgsFlightInfo/usgsFlightInfo
 usgsFlightInfo/output.txt
+travelTimes/travelTimes
