@@ -62,11 +62,13 @@ string getCityCode(int flightNumber) {
         return "HVN";
     } else if (flightNumber == 387 || flightNumber == 388) {
         return "TPA";
-    } else if (flightNumber == 771 || flightNumber == 772) {
+    } else if (flightNumber == 771 || flightNumber == 772 ||
+               flightNumber == 481 || flightNumber == 482) {
         return "FLL";
     } else if (flightNumber == 780 || flightNumber == 781) {
         return "MCO";
-    } else if (flightNumber == 471 || flightNumber == 472) {
+    } else if (flightNumber == 471 || flightNumber == 472 ||
+               flightNumber == 773 || flightNumber == 774) {
         return "BWI";
     } else if (flightNumber == 575 || flightNumber == 576) {
         return "ILG";
