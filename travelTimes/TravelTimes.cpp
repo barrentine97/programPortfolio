@@ -84,10 +84,21 @@ int main() {
                     if (!city.empty() && city.back() == 'd') {
                         city.pop_back();
                         trim(city);
-                        emp.mileage += getMileage(city);
+                        int mileage = getMileage(city);
+                        if (mileage == 0) {
+                            cerr << "Invalid City Code. Please check travelTimes.txt" << endl;
+                            return -1;
+                        }
+                        emp.mileage += mileage;
                     }
-                    
-                    emp.numHours += getHours(city);
+
+                    int hours = getHours(city);
+                    if (hours == 0) {
+                        cerr << "Invalid City Code. Please check travelTimes.txt" << endl;
+                        return -1;
+                    }
+
+                    emp.numHours += hours;
                 }
 
                 employees.push_back(emp);
