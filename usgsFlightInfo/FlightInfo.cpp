@@ -102,14 +102,14 @@ int main(int argc, char** argv) {
     }
     
     // ask user which schedule to use
-    char day;
+    string day;
     string input;
     ifstream file;
-    cout << "Please enter the day(S/M/T/F): ";
+    cout << "Please enter the day(S/M/T/Th/F/Sa): ";
     cin >> day;
-    day = toupper(day);
+    transform(day.begin(), day.end(), day.begin(), ::toupper);
     string fullPath;
-    if (day == 'S' || day == 'T') {
+    if (day == "S" || day == "TH") {
         cout << "\nOpening Sunday/Thursday schedule...\n";
         if (testing) {
             fullPath = "schedules/sun-thurs schedule.txt";
@@ -121,7 +121,7 @@ int main(int argc, char** argv) {
             }
         }
 
-    } else if (day == 'M' || day == 'F') {
+    } else if (day == "M" || day == "F") {
         cout << "\nOpening Monday/Friday schedule...\n";
         if (testing) {
             fullPath = "schedules/mon-fri schedule.txt";
@@ -129,6 +129,30 @@ int main(int argc, char** argv) {
             fullPath = getFullPath("Desktop/schedules/mon-fri schedule.txt");
             if (fullPath.empty()) {
                 cerr << "Unable to resolve full path for the schedule file." << endl;
+                return -1;
+            }
+        }
+
+    } else if (day == "T") {
+        cout << "\nOpening Tuesday schedule...\n";
+        if (testing) {
+            fullPath = "schedules/tue schedule.txt";
+        } else {
+            fullPath = getFullPath("Desktop/schedules/tue schedule.txt");
+            if (fullPath.empty()) {
+                cerr << "Unable to resolve full path for the schedule file." << endl;
+                return -1;
+            }
+        }
+
+    } else if (day == "SA") {
+        cout << "\nOpening Saturday schedule...\n";
+        if (testing) {
+            fullPath = "schedules/sat schedule.txt";
+        } else {
+            fullPath = getFullPath("Desktop/schedules/sat schedule.txt");
+            if (fullPath.empty()) {
+                cerr << "Unable to resolve full Path for the schedule file." << endl;
                 return -1;
             }
         }
@@ -158,13 +182,13 @@ int main(int argc, char** argv) {
 
             string arrivalCity = getCityCode(arrivalNumber);
             if (arrivalCity == "Invalid") {
-                cerr << "Invalid Flight Number: " << arrivalNumber << ". Please check schedule";
+                cerr << "Invalid Flight Number: " << arrivalNumber << ". Please check schedule" << endl;
                 return -1;
             }
 
             string departureCity = getCityCode(departureNumber);
             if (departureCity == "Invalid") {
-                cerr << "Invalid Flight Number: " << departureNumber << ". Please check schedule";
+                cerr << "Invalid Flight Number: " << departureNumber << ". Please check schedule" << endl;
                 return -1;
             }
 
