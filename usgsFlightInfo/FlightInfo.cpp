@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <limits>
+#include <map>
 #include <stdlib.h>
 #include <sys/stat.h>
 
@@ -51,6 +52,24 @@ bool firstDeparture(Flight f1, Flight f2) {
     return (f1.getDepartureTime() < f2.getDepartureTime());
 }
 
+map<int, string> cityCodes;
+
+void loadCityCodes(string filePath) {
+    ifstream file(filePath);
+    if (!file.is_open()) {
+        cerr << "Error: Could not open flight code file: " << filePath << endl;
+        exit(-1);
+    }
+
+    int flightNumber;
+    string cityCode;
+    while (file >> flightNumber >> cityCode) {
+        cityCodes[flightNumber] = cityCode;
+    }
+
+    file.close();
+}
+
 /**
  * @brief Get the City Code associated with the flight number
  * 
@@ -58,22 +77,9 @@ bool firstDeparture(Flight f1, Flight f2) {
  * @return string the airport code associated with the given flight number
  */
 string getCityCode(int flightNumber) {
-    if (flightNumber == 455 || flightNumber == 456) {
-        return "HVN";
-    } else if (flightNumber == 387 || flightNumber == 388) {
-        return "TPA";
-    } else if (flightNumber == 771 || flightNumber == 772 ||
-               flightNumber == 481 || flightNumber == 482) {
-        return "FLL";
-    } else if (flightNumber == 780 || flightNumber == 781) {
-        return "MCO";
-    } else if (flightNumber == 471 || flightNumber == 472 ||
-               flightNumber == 773 || flightNumber == 774) {
-        return "BWI";
-    } else if (flightNumber == 575 || flightNumber == 576) {
-        return "ILG";
-    } else if (flightNumber == 909 || flightNumber == 910) {
-        return "MSP";
+    auto code = cityCodes.find(flightNumber);
+    if (code != cityCodes.end()) {
+        return code->second;
     } else {
         return "Invalid";
     }
@@ -100,6 +106,16 @@ int main(int argc, char** argv) {
         cout << "Invalid Arguments. Please try again." << endl;
         return -1;
     }
+
+    // load flight codes
+    string fullPath;
+    if (testing) {
+        fullPath = "schedules/flightCodes.txt";
+    } else {
+        fullPath = getFullPath("Desktop/schedules/flightCodes.txt");
+    }
+
+    loadCityCodes(fullPath);
     
     // ask user which schedule to use
     string day;
@@ -108,7 +124,6 @@ int main(int argc, char** argv) {
     cout << "Please enter the day(S/M/T/Th/F/Sa): ";
     cin >> day;
     transform(day.begin(), day.end(), day.begin(), ::toupper);
-    string fullPath;
     if (day == "S" || day == "TH") {
         cout << "\nOpening Sunday/Thursday schedule...\n";
         if (testing) {
