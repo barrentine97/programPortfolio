@@ -54,6 +54,11 @@ bool firstDeparture(Flight f1, Flight f2) {
 
 map<int, string> cityCodes;
 
+/**
+ * @brief reads the flight city codes from the file path and stores them in the cityCodes map
+ * 
+ * @param filePath the filepath to read from
+ */
 void loadCityCodes(string filePath) {
     ifstream file(filePath);
     if (!file.is_open()) {
@@ -188,6 +193,16 @@ int main(int argc, char** argv) {
     if (file.is_open()) {
         while (getline(file, input)) {
 
+            // trim leading and trailing white space
+            input.erase(input.find_last_not_of(" \n\r\t") + 1);
+            input.erase(0, input.find_first_not_of(" \n\r\t"));
+
+            // skip the blank lines
+            if (input.empty()) {
+                continue;
+            }
+
+            // parse the line information
             string airlineCode;
             int arrivalNumber, departureNumber;
             int arrivalTime, departureTime;
@@ -213,6 +228,7 @@ int main(int argc, char** argv) {
                 airlineCode = "XP";
             }
             
+            // create the flight object
             Flight flight(airlineCode, arrivalNumber, arrivalCity, departureNumber, departureCity);
 
             departureInfo = flight.getDepartureNumber();
