@@ -4,6 +4,8 @@
         "string_view": "cpp",
         "ostream": "cpp",
         "__locale": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "exception": "cpp",
+        "iomanip": "cpp"
     }
 }
