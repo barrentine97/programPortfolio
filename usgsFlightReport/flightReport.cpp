@@ -100,7 +100,7 @@ string generateReport(const string &filename, const string &startDate, const str
             lastDate = date;
         }
 
-        string flightInfo = rows[2].to_string();
+        string flightInfo = rows[1].to_string();
         string paxIn = rows[7].to_string();
         string paxOut = rows[8].to_string();
 
