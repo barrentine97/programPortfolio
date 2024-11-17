@@ -1,5 +1,5 @@
 CXX := clang++
-EXE := monthlyReport
+EXE := flightReport
 CXXFLAGS := -std=c++14
 
 XLNT_INCLUDE := /Users/brandonbarrentine/vcpkg/installed/arm64-osx/include
@@ -7,7 +7,7 @@ XLNT_LIB := /Users/brandonbarrentine/vcpkg/installed/arm64-osx/lib
 
 CXXFLAGS += -I$(XLNT_INCLUDE)
 
-SRC := monthlyReport.cpp
+SRC := flightReport.cpp
 OBJS := $(SRC:.cpp=.o)
 
 $(EXE): $(OBJS)

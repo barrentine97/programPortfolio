@@ -34,30 +34,35 @@ string getCurrentMonthSheet() {
 }
 
 string formatExcelDate(double serialDate) {
-    const double EXCEL_EPOCH_OFFSET = 25569;  // Excel's epoch (1/1/1900) vs Unix epoch (1/1/1970)
+    const double EXCEL_EPOCH_OFFSET = 25569;
 
-    // Skip invalid dates, those should correspond to serial number < EXCEL_EPOCH_OFFSET
     if (serialDate < EXCEL_EPOCH_OFFSET) {
-        return "Invalid Date";  // Return a placeholder for invalid dates
+        return "Invalid Date";
     }
 
-    time_t rawTime = (serialDate - EXCEL_EPOCH_OFFSET) * 86400;  // 86400 seconds in a day
+    time_t rawTime = (serialDate - EXCEL_EPOCH_OFFSET) * 86400;
 
     tm timeStruct;
-    gmtime_r(&rawTime, &timeStruct);  // Convert to GMT time
+    gmtime_r(&rawTime, &timeStruct);
 
-    // Format the date in MM/DD/YY format (e.g., 11/01/24)
     stringstream formattedDate;
     formattedDate << put_time(&timeStruct, "%m/%d/%y");
 
     return formattedDate.str();
 }
 
-string generateMonthlyReport(const string &filename) {
+time_t convertToTimeT(const string &dateStr) {
+    tm timeStruct = {};
+    stringstream ss(dateStr);
+    ss >> get_time(&timeStruct, "%m/%d/%y");
+
+    return mktime(&timeStruct);
+}
+
+string generateReport(const string &filename, const string &startDate, const string &endDate) {
     xlnt::workbook wb;
     wb.load(filename);
 
-    // get the sheet for the current month
     string currentMonth = getCurrentMonthSheet();
     if (!wb.contains(currentMonth)) {
         cerr << "Sheet for " << currentMonth << " not found in the workbook" << endl;
@@ -69,31 +74,36 @@ string generateMonthlyReport(const string &filename) {
     int rowIndex = 0;
     string lastDate = "";
 
+    time_t start = convertToTimeT(startDate);
+    time_t end = convertToTimeT(endDate);
+
     for (auto rows : ws.rows(false)) {
-        if (rowIndex < 2) {  // Skip header rows
+        if (rowIndex < 2) {
             rowIndex++;
             continue;
         }
 
-        // Get the date and convert from Excel serial date
         double serialDate = rows[0].value<double>();
         string date = formatExcelDate(serialDate);
+
         if (date == "Invalid Date") {
-            continue;  // Skip invalid dates
+            continue;
         }
 
-        // Only print the date once
+        time_t flightTime = convertToTimeT(date);
+        if (flightTime < start || flightTime > end) {
+            continue;
+        }
+
         if (date != lastDate) {
             report += date + ":\n\n";
-            lastDate = date;  // Update the last printed date
+            lastDate = date;
         }
 
-        // Extract flight information and Pax data
         string flightInfo = rows[2].to_string();
         string paxIn = rows[7].to_string();
         string paxOut = rows[8].to_string();
 
-        // Add flight info under the current date
         report += flightInfo + "\n";
         report += "Pax In: " + paxIn + "\n";
         report += "Pax Out: " + paxOut + "\n\n";
@@ -102,18 +112,24 @@ string generateMonthlyReport(const string &filename) {
     return report;
 }
 
-
 int main(int argc, char** argv) {
+    string startDate, endDate;
+
+    cout << "Enter start date (MM/DD/YY): ";
+    cin >> startDate;
+    cout << "Enter end date (MM/DD/YY): ";
+    cin >> endDate;
+
     string outputPath = "output.txt";
 
     remove(outputPath.c_str());
     ofstream output(outputPath.c_str());
     if (output.is_open()) {
-        output << generateMonthlyReport(WORKBOOK_NAME);
+        output << generateReport(WORKBOOK_NAME, startDate, endDate);
         output.close();
         cout << "Output has been saved to " << outputPath << endl;
     } else {
-        cerr << "unable to open output file at path: " << outputPath << endl;
+        cerr << "Unable to open output file at path: " << outputPath << endl;
         return -1;
     }
 
