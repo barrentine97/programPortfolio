@@ -3,10 +3,34 @@
 #include <ctime>
 #include <sstream>
 #include <fstream>
+#include <sys/stat.h>
 
 using namespace std;
 
-string WORKBOOK_NAME = "Avelo Flight Stats 2024.xlsx";
+string WORKBOOK_NAME = "Avelo Flight Stats 2025.xlsx";
+
+string getFullPath(string relativePath) {
+    const char* homeDir = getenv("HOME");
+    if (homeDir == nullptr) {
+        cerr << "Error: HOME environment variable not set." << endl;
+        return "";
+    }
+
+    string fullPath = string(homeDir) + "/Documents/USGS/Avelo Airlines/" + relativePath;
+
+    // Check if the directory exists
+    size_t pos = fullPath.find_last_of('/');
+    if (pos != string::npos) {
+        string dir = fullPath.substr(0, pos);
+        struct stat info;
+        if (stat(dir.c_str(), &info) != 0 || !(info.st_mode & S_IFDIR)) {
+            cerr << "Error: Directory " << dir << " does not exist." << endl;
+            return "";
+        }
+    }
+
+    return fullPath;
+}
 
 string getCurrentMonthSheet() {
     // get the current date
@@ -120,12 +144,13 @@ int main(int argc, char** argv) {
     cout << "Enter end date (MM/DD/YY): ";
     cin >> endDate;
 
-    string outputPath = "output.txt";
+    string excelPath = getFullPath(WORKBOOK_NAME);
+    string outputPath = getFullPath("output.txt");
 
     remove(outputPath.c_str());
     ofstream output(outputPath.c_str());
     if (output.is_open()) {
-        output << generateReport(WORKBOOK_NAME, startDate, endDate);
+        output << generateReport(excelPath, startDate, endDate);
         output.close();
         cout << "Output has been saved to " << outputPath << endl;
     } else {
