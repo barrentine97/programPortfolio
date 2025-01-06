@@ -6,6 +6,7 @@
         "__locale": "cpp",
         "iostream": "cpp",
         "exception": "cpp",
-        "iomanip": "cpp"
+        "iomanip": "cpp",
+        "iosfwd": "cpp"
     }
 }

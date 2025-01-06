@@ -1,12 +1,32 @@
+XP
+Arrivals:
 455 HVN
-456 HVN
 780 MCO
-781 MCO
 773 BWI
-774 BWI
 575 ILG
-576 ILG
-481 FLL
 482 FLL
 507 TPA
+
+Departures:
+456 HVN
+781 MCO
+774 BWI
+576 ILG
+481 FLL
 508 TPA
+
+SY
+Arrivals:
+909 MSP
+
+Departures:
+910 MSP
+
+MX
+Arrivals:
+524 BDL
+525 MCO
+
+Departures:
+524 MCO
+525 BDL

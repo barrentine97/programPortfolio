@@ -30,9 +30,9 @@ public:
     void setInboundWchr(int inboundWchr);
     void setOutboundWchr(int outboundWchr);
     void setGate(int gate);
-    string getArrivalNumber();
+    string getArrivalInfo();
     int getArrivalTime();
-    string getDepartureNumber();
+    string getDepartureInfo();
     int getDepartureTime();
     string printFlight();
 };

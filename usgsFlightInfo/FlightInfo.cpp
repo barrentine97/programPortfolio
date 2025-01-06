@@ -52,24 +52,61 @@ bool firstDeparture(Flight f1, Flight f2) {
     return (f1.getDepartureTime() < f2.getDepartureTime());
 }
 
-map<int, string> cityCodes;
+map<int, string> arrivals;
+map<int, string> departures;
+map<int, string> airlineCodes;
 
 /**
  * @brief reads the flight city codes from the file path and stores them in the cityCodes map
  * 
  * @param filePath the filepath to read from
  */
-void loadCityCodes(string filePath) {
+void loadCityCodes(const string &filePath) {
     ifstream file(filePath);
     if (!file.is_open()) {
         cerr << "Error: Could not open flight code file: " << filePath << endl;
         exit(-1);
     }
 
-    int flightNumber;
-    string cityCode;
-    while (file >> flightNumber >> cityCode) {
-        cityCodes[flightNumber] = cityCode;
+    string line, currentAirline;
+    bool isArrivals = false;
+
+    while (getline(file, line)) {
+        line.erase(0, line.find_first_not_of(" \t\r\n"));  // Trim leading whitespace
+        line.erase(line.find_last_not_of(" \t\r\n") + 1);  // Trim trailing whitespace
+
+        if (line.empty()) continue;
+
+        // Check for airline code (e.g., XP)
+        if (isalpha(line[0]) && line.size() == 2) {
+            currentAirline = line;  // Set the current airline when we find it
+            continue;
+        }
+
+        // check if we are reading arrivals or departures
+        if (line == "Arrivals:" || line == "Departures:") {
+            isArrivals = (line == "Arrivals:");
+            continue;
+        }
+
+        // Now read the flight number and city code from the line
+        int flightNumber;
+        string cityCode;
+        istringstream buffer(line);
+        buffer >> flightNumber >> cityCode;
+
+        if (buffer.fail() || cityCode.empty()) {
+            cerr << "Error: Malformed line in file: " << line << endl;
+            continue;
+        }
+
+        // Store city code and airline code
+        airlineCodes[flightNumber] = currentAirline;
+        if (isArrivals) {
+            arrivals[flightNumber] = cityCode;
+        } else {
+            departures[flightNumber] = cityCode;
+        }
     }
 
     file.close();
@@ -81,7 +118,10 @@ void loadCityCodes(string filePath) {
  * @param flightNumber the flight number to consider
  * @return string the airport code associated with the given flight number
  */
-string getCityCode(int flightNumber) {
+string getCityCode(int flightNumber, bool isArrival) {
+    // Choose the correct map based on whether it's an arrival or departure
+    const map<int, string>& cityCodes = isArrival ? arrivals : departures;
+
     auto code = cityCodes.find(flightNumber);
     if (code != cityCodes.end()) {
         return code->second;
@@ -90,182 +130,112 @@ string getCityCode(int flightNumber) {
     }
 }
 
+string getSchedulePath(const string &day, bool testing) {
+    map<string, string> scheduleMap = {
+        {"S", "sun-thurs schedule.txt"},
+        {"TH", "sun-thurs schedule.txt"},
+        {"M", "mon-fri schedule.txt"},
+        {"F", "mon-fri schedule.txt"},
+        {"T", "tue schedule.txt"},
+        {"SA", "sat schedule.txt"}
+    };
+
+    auto it = scheduleMap.find(day);
+    if (it == scheduleMap.end()) {
+        return "";
+    }
+
+    string relativePath = "schedules/" + it->second;
+    return testing ? relativePath : getFullPath("Desktop/" + relativePath);
+}
+
 /**
  * @brief runs the program.
  * 
  * @return int system exit status
  */
 int main(int argc, char** argv) {
+    bool testing = (argc == 2 && strcmp(argv[1], "t") == 0);
 
-    //determine if running in testing mode
-    bool testing = false;
-    if (argc == 2) {
-        if (strcmp(argv[1], "t") == 0) {
-            cout << "Entering testing mode..." << endl;
-            testing = true;
-        } else {
-            cout << "Invalid Arguments. Please try again." << endl;
-            return -1;
-        }
-    } else if (argc > 2) {
-        cout << "Invalid Arguments. Please try again." << endl;
+    string fullPath = testing ? "schedules/flightCodes.txt" : getFullPath("Desktop/schedules/flightCodes.txt");
+    if (fullPath.empty()) {
         return -1;
-    }
-
-    // load flight codes
-    string fullPath;
-    if (testing) {
-        fullPath = "schedules/flightCodes.txt";
-    } else {
-        fullPath = getFullPath("Desktop/schedules/flightCodes.txt");
     }
 
     loadCityCodes(fullPath);
-    
-    // ask user which schedule to use
+
+    cout << "Please enter the day (S/M/T/Th/F/Sa): ";
     string day;
-    string input;
-    ifstream file;
-    cout << "Please enter the day(S/M/T/Th/F/Sa): ";
     cin >> day;
     transform(day.begin(), day.end(), day.begin(), ::toupper);
-    if (day == "S" || day == "TH") {
-        cout << "\nOpening Sunday/Thursday schedule...\n";
-        if (testing) {
-            fullPath = "schedules/sun-thurs schedule.txt";
-        } else {
-            fullPath = getFullPath("Desktop/schedules/sun-thurs schedule.txt");
-            if (fullPath.empty()) {
-                cerr << "Unable to resolve full path for the schedule file." << endl;
-                return -1;
-            }
-        }
 
-    } else if (day == "M" || day == "F") {
-        cout << "\nOpening Monday/Friday schedule...\n";
-        if (testing) {
-            fullPath = "schedules/mon-fri schedule.txt";
-        } else {
-            fullPath = getFullPath("Desktop/schedules/mon-fri schedule.txt");
-            if (fullPath.empty()) {
-                cerr << "Unable to resolve full path for the schedule file." << endl;
-                return -1;
-            }
-        }
-
-    } else if (day == "T") {
-        cout << "\nOpening Tuesday schedule...\n";
-        if (testing) {
-            fullPath = "schedules/tue schedule.txt";
-        } else {
-            fullPath = getFullPath("Desktop/schedules/tue schedule.txt");
-            if (fullPath.empty()) {
-                cerr << "Unable to resolve full path for the schedule file." << endl;
-                return -1;
-            }
-        }
-
-    } else if (day == "SA") {
-        cout << "\nOpening Saturday schedule...\n";
-        if (testing) {
-            fullPath = "schedules/sat schedule.txt";
-        } else {
-            fullPath = getFullPath("Desktop/schedules/sat schedule.txt");
-            if (fullPath.empty()) {
-                cerr << "Unable to resolve full Path for the schedule file." << endl;
-                return -1;
-            }
-        }
-
-    } else {
-        cerr << "Invalid day. Please try again." << endl;
+    fullPath = getSchedulePath(day, testing);
+    if (fullPath.empty()) {
+        cerr << "Invalid day or schedule not found." << endl;
         return -1;
     }
 
-    file.open(fullPath);
+    ifstream file(fullPath);
+    if (!file.is_open()) {
+        cerr << "Unable to open schedule file: " << fullPath << endl;
+        return -1;
+    }
 
     vector<Flight> flights;
+    string input;
 
-    string arrivalInfo;
-    string departureInfo;
+    while (getline(file, input)) {
+        input.erase(input.find_last_not_of(" \n\r\t") + 1);
+        input.erase(0, input.find_first_not_of(" \n\r\t"));
 
-    // read each flight and add to list of flights
-    if (file.is_open()) {
-        while (getline(file, input)) {
+        if (input.empty()) continue;
 
-            // trim leading and trailing white space
-            input.erase(input.find_last_not_of(" \n\r\t") + 1);
-            input.erase(0, input.find_first_not_of(" \n\r\t"));
-
-            // skip the blank lines
-            if (input.empty()) {
-                continue;
-            }
-
-            // parse the line information
-            string airlineCode;
-            int arrivalNumber, departureNumber;
-            int arrivalTime, departureTime;
-
-            istringstream buffer(input);
-            buffer >> arrivalNumber >> departureNumber;
-
-            string arrivalCity = getCityCode(arrivalNumber);
-            if (arrivalCity == "Invalid") {
-                cerr << "Invalid Flight Number: " << arrivalNumber << ". Please check schedule" << endl;
-                return -1;
-            }
-
-            string departureCity = getCityCode(departureNumber);
-            if (departureCity == "Invalid") {
-                cerr << "Invalid Flight Number: " << departureNumber << ". Please check schedule" << endl;
-                return -1;
-            }
-
-            if (arrivalNumber == 909) {
-                airlineCode = "SY";
-            } else {
-                airlineCode = "XP";
-            }
-            
-            // create the flight object
-            Flight flight(airlineCode, arrivalNumber, arrivalCity, departureNumber, departureCity);
-
-            departureInfo = flight.getDepartureNumber();
-            arrivalInfo = flight.getArrivalNumber();
-
-            if (buffer.rdbuf()->in_avail() == 0) {
-                cout << arrivalInfo << " Scheduled Arrival: ";
-                cin >> arrivalTime;
-                cout << departureInfo << " Scheduled Departure: ";
-                cin >> departureTime;
-            } else {
-                buffer >> arrivalTime >> departureTime;
-            }
-
-            flight.setArrivalTime(arrivalTime);
-            flight.setDepartureTime(departureTime);
-
-            flights.push_back(flight);
+        istringstream buffer(input);
+        int arrivalNumber, departureNumber;
+        if (!(buffer >> arrivalNumber >> departureNumber)) {
+            cerr << "Invalid schedule entry: " << input << endl;
+            continue;
         }
 
-        file.close();
-        sort(flights.begin(), flights.end(), firstDeparture);
-        cout << endl;
-    } else {
-        cerr << "unable to open schedule file" << endl;
-        return -1;
+        string arrivalCity = getCityCode(arrivalNumber, true);
+        string departureCity = getCityCode(departureNumber, false);
+        if (arrivalCity == "Invalid" || departureCity == "Invalid") {
+            cerr << "Invalid flight numbers: " << input << endl;
+            continue;
+        }
+
+        string airlineCode = airlineCodes[arrivalNumber];
+        Flight flight(airlineCode, arrivalNumber, arrivalCity, departureNumber, departureCity);
+
+        int arrivalTime;
+        int departureTime;
+        if (buffer.rdbuf()->in_avail() == 0) {
+            cout << flight.getArrivalInfo() << " Scheduled Arrival: ";
+            cin >> arrivalTime;
+            cout << flight.getDepartureInfo() << " Scheduled Departure: ";
+            cin >> departureTime;
+            cout << endl;
+        } else {
+            buffer >> arrivalTime >> departureTime;
+        }
+
+        flight.setArrivalTime(arrivalTime);
+        flight.setDepartureTime(departureTime);
+
+        flights.push_back(flight);
     }
 
+    file.close();
+    sort(flights.begin(), flights.end(), firstDeparture);
+
+    // ask user for the rest of the information
     int inboundWchr;
     int outboundPax;
     int outboundWchr;
     int gate;
-
-    // ask user for the rest of the information
     for (Flight &flight : flights) {
-        string arrivalInfo = flight.getArrivalNumber();
-        string departureInfo = flight.getDepartureNumber();
+        string arrivalInfo = flight.getArrivalInfo();
+        string departureInfo = flight.getDepartureInfo();
 
         cout << arrivalInfo << " inbound wchr: ";
         cin >> inboundWchr;

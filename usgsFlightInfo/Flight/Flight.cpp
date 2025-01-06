@@ -42,7 +42,7 @@ void Flight::setGate(int gate) {
     this->gate = gate;
 }
 
-string Flight::getArrivalNumber() {
+string Flight::getArrivalInfo() {
     return airlineCode + to_string(arrivalNumber);
 }
 
@@ -50,7 +50,7 @@ int Flight::getArrivalTime() {
     return arrivalTime;
 }
 
-string Flight::getDepartureNumber() {
+string Flight::getDepartureInfo() {
     return airlineCode + to_string(departureNumber);
 }
 
@@ -63,7 +63,7 @@ string Flight::printFlight() {
     string arrivalPadded = addPadding(4, '0', arrivalTime);
     string departurePadded = addPadding(4, '0', departureTime);
 
-    return getArrivalNumber() + " / " + getDepartureNumber() + " -- " +
+    return getArrivalInfo() + " / " + getDepartureInfo() + " -- " +
             arrivalCity + "-ILM-" + departureCity + " -- " +
             "arrives " + arrivalPadded + " / " + "departs " + departurePadded + " -- " +
             paxPadded + " passengers -- " +
